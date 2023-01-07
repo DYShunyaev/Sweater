@@ -11,6 +11,7 @@ public class GeneralService {
     public boolean emailVerification(String email) {
         Pattern pattern = Pattern.compile("[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z0-9_-]+");
         Matcher matcher = pattern.matcher(email);
-        return true;
+
+        return matcher.matches();
     }
 }

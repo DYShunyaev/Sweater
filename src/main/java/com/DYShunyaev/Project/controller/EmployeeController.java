@@ -4,6 +4,7 @@ import com.DYShunyaev.Project.models.Client;
 import com.DYShunyaev.Project.models.Employee;
 import com.DYShunyaev.Project.service.ClientService;
 import com.DYShunyaev.Project.service.EmployeeService;
+import com.DYShunyaev.Project.service.GeneralService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,11 +19,14 @@ import java.util.List;
 public class EmployeeController {
     private final EmployeeService employeeService;
     private final ClientService clientService;
+    private final GeneralService generalService;
 
     @Autowired
-    public EmployeeController(EmployeeService employeeService, ClientService clientService) {
+    public EmployeeController(EmployeeService employeeService, ClientService clientService,
+                              GeneralService generalService) {
         this.employeeService = employeeService;
         this.clientService = clientService;
+        this.generalService = generalService;
     }
 
     @RequestMapping("/mainPage")
@@ -58,8 +62,14 @@ public class EmployeeController {
                                 @RequestParam(name = "email", required = false) String email,
                                 @RequestParam(name = "password", required = false) String password,
                                 @RequestParam(name = "birthday", required = false)Date birthday,
-                                @RequestParam(name = "address", required = false) String address) {
+                                @RequestParam(name = "address", required = false) String address,
+                                Model model) {
         Client client = new Client(name, surname, email, password, birthday, address);
+        if(!generalService.emailVerification(email)) {
+            client = new Client();
+            model.addAttribute("client", client);
+            return "registration";
+        }
         clientService.saveClient(client);
         return "redirect:/mainView";
     }
